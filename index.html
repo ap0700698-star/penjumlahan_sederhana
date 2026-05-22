@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MathKids SD</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ═══════════════ LOGIN PAGE ═══════════════ -->
+<div class="page active" id="page-login">
+  <div class="login-wrap">
+    <div class="login-logo">Math<span>Kids</span></div>
+    <p class="login-sub">Platform latihan matematika untuk SD</p>
+
+    <div class="card">
+      <div class="tabs mb" id="login-tabs">
+        <div class="tab active" onclick="setLoginTab('login')">Masuk</div>
+        <div class="tab" onclick="setLoginTab('register')">Daftar</div>
+      </div>
+
+      <!-- Login Form -->
+      <div id="login-form">
+        <div class="form-group">
+          <label class="form-label">Username</label>
+          <input class="inp" id="l-user" placeholder="Masukkan username" autocomplete="off">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input class="inp" id="l-pass" type="password" placeholder="Masukkan password">
+        </div>
+        <div id="login-err" class="form-err"></div>
+        <button class="btn btn-primary btn-lg btn-block mt" onclick="doLogin()">Masuk</button>
+        <div class="divider"></div>
+        <button class="btn btn-ghost btn-block" onclick="doAdminLogin()">🔐 Masuk sebagai Admin</button>
+      </div>
+
+      <!-- Register Form -->
+      <div id="register-form" style="display:none">
+        <div class="form-group">
+          <label class="form-label">Nama Lengkap</label>
+          <input class="inp" id="r-name" placeholder="Nama kamu">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Username</label>
+          <input class="inp" id="r-user" placeholder="Buat username unik">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input class="inp" id="r-pass" type="password" placeholder="Min. 4 karakter">
+        </div>
+        <div id="reg-err" class="form-err"></div>
+        <button class="btn btn-success btn-lg btn-block mt" onclick="doRegister()">Buat Akun</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ HOME PAGE ═══════════════ -->
+<div class="page" id="page-home">
+  <nav class="nav">
+    <div class="nav-brand">Math<span>Kids</span></div>
+    <div class="nav-actions">
+      <button class="btn btn-ghost" onclick="gotoPage('scoreboard')">🏆 Papan Skor</button>
+      <button class="btn btn-ghost" onclick="gotoPage('perkalian')">× Tabel</button>
+      <button class="btn btn-ghost" onclick="gotoPage('profile')">Profil</button>
+      <button class="btn btn-danger" onclick="doLogout()">Keluar</button>
+    </div>
+  </nav>
+  <div class="content">
+    <div class="home-header">
+      <div>
+        <div style="font-size:13px;color:var(--txt2);margin-bottom:4px">Selamat datang,</div>
+        <div class="home-welcome" id="home-name">—</div>
+      </div>
+      <div class="flex gap-sm">
+        <div class="stat-chip">
+          <span class="stat-chip-val txt-blue" id="home-score">0</span>
+          <span class="stat-chip-lbl">Total Skor</span>
+        </div>
+        <div class="stat-chip">
+          <span class="stat-chip-val" id="home-streak">🔥 0</span>
+          <span class="stat-chip-lbl">Streak</span>
+        </div>
+      </div>
+    </div>
+    <div class="section-title">Pilih Kelas</div>
+    <div class="grid-classes" id="class-grid"></div>
+  </div>
+</div>
+
+<!-- ═══════════════ CLASS SELECT PAGE ═══════════════ -->
+<div class="page" id="page-class">
+  <nav class="nav">
+    <div class="flex gap-sm">
+      <button class="btn btn-ghost" onclick="gotoPage('home')">← Kembali</button>
+      <div class="nav-brand" id="class-nav-title">Kelas</div>
+    </div>
+    <div class="nav-actions">
+      <button class="btn btn-ghost" onclick="gotoPage('scoreboard')">🏆</button>
+      <button class="btn btn-ghost" onclick="gotoPage('profile')">👤</button>
+    </div>
+  </nav>
+  <div class="content" style="max-width:700px">
+    <div class="text-center mb-lg">
+      <div id="class-icon" style="font-size:48px;line-height:1;margin-bottom:12px"></div>
+      <div id="class-label" class="heading" style="font-size:22px;margin-bottom:6px"></div>
+      <div id="class-desc" class="txt-muted" style="font-size:14px"></div>
+    </div>
+
+    <div class="section-title">Pilih Operasi</div>
+    <div class="op-grid" id="op-grid"></div>
+
+    <div class="grid2 mb-lg">
+      <div class="card card-sm text-center">
+        <div class="txt-sm txt-muted mb-xs">Skor Kelas Ini</div>
+        <div class="fw-black txt-blue" style="font-size:32px" id="class-score-disp">0</div>
+      </div>
+      <div class="card card-sm text-center">
+        <div class="txt-sm txt-muted mb-xs">Soal Selesai</div>
+        <div class="fw-black" style="font-size:32px;color:var(--green)" id="class-qdone-disp">0</div>
+      </div>
+    </div>
+    <button class="btn btn-primary btn-lg btn-block" onclick="startGame()">Mulai Latihan →</button>
+  </div>
+</div>
+
+<!-- ═══════════════ GAME PAGE ═══════════════ -->
+<div class="page" id="page-game">
+  <div class="game-header">
+    <div class="flex gap-sm">
+      <button class="btn btn-ghost" onclick="endGame(false)">✕ Berhenti</button>
+      <div class="nav-brand" id="game-title-nav" style="font-size:14px"></div>
+    </div>
+    <div class="game-meta">
+      <div class="game-chip">✓ <span id="game-correct">0</span></div>
+      <div class="game-chip">✗ <span id="game-wrong">0</span></div>
+      <div class="game-chip txt-blue">★ <span id="game-score">0</span></div>
+    </div>
+  </div>
+
+  <div class="content" style="max-width:560px">
+    <div class="flex-between mb">
+      <div>
+        <div class="txt-sm txt-muted">Soal</div>
+        <div class="fw-bold" id="game-q-num">1 / 10</div>
+      </div>
+      <div class="timer-ring">
+        <svg width="60" height="60" viewBox="0 0 64 64">
+          <circle cx="32" cy="32" r="28" fill="none" stroke="var(--surface2)" stroke-width="5"/>
+          <circle id="timer-circle" cx="32" cy="32" r="28" fill="none" stroke="var(--blue)"
+            stroke-width="5" stroke-dasharray="176" stroke-dashoffset="0" stroke-linecap="round"/>
+        </svg>
+        <div class="num" id="timer-num">15</div>
+      </div>
+    </div>
+
+    <div class="progress mb">
+      <div class="progress-fill" id="game-progress" style="width:0%"></div>
+    </div>
+
+    <div class="question-box" id="question-box">
+      <div class="q-op-label" id="q-op-label">Penjumlahan</div>
+      <div class="q-text" id="q-text">—</div>
+      <div class="q-hint">= ?</div>
+    </div>
+
+    <div class="result-strip" id="result-strip"></div>
+
+    <input class="inp inp-lg" id="answer-input" type="number" placeholder="Jawaban kamu…">
+    <button class="btn btn-primary btn-lg btn-block mt" id="submit-btn" onclick="checkAnswer()">
+      Konfirmasi Jawaban
+    </button>
+  </div>
+</div>
+
+<!-- ═══════════════ SCOREBOARD PAGE ═══════════════ -->
+<div class="page" id="page-scoreboard">
+  <nav class="nav">
+    <div class="flex gap-sm">
+      <button class="btn btn-ghost" onclick="gotoPage('home')">← Kembali</button>
+      <div class="nav-brand">🏆 Papan Skor</div>
+    </div>
+  </nav>
+  <div class="content">
+    <div class="tabs mb" id="sb-tabs">
+      <div class="tab active" onclick="setSBTab('all')">Semua</div>
+      <div class="tab" onclick="setSBTab('kelas1')">K1</div>
+      <div class="tab" onclick="setSBTab('kelas2')">K2</div>
+      <div class="tab" onclick="setSBTab('kelas3')">K3</div>
+      <div class="tab" onclick="setSBTab('kelas4')">K4</div>
+      <div class="tab" onclick="setSBTab('kelas5')">K5</div>
+      <div class="tab" onclick="setSBTab('kelas6')">K6</div>
+    </div>
+    <div id="sb-list"></div>
+  </div>
+</div>
+
+<!-- ═══════════════ PROFILE PAGE ═══════════════ -->
+<div class="page" id="page-profile">
+  <nav class="nav">
+    <div class="flex gap-sm">
+      <button class="btn btn-ghost" onclick="gotoPage('home')">← Kembali</button>
+      <div class="nav-brand">Profil</div>
+    </div>
+    <button class="btn btn-ghost" onclick="openEditProfile()">✏️ Edit</button>
+  </nav>
+  <div class="content" style="max-width:640px">
+
+    <div class="profile-hero">
+      <div class="profile-avatar-wrap" onclick="triggerAvatarUpload()">
+        <div class="profile-avatar" id="profile-avatar-inner"></div>
+        <div class="avatar-edit">✏</div>
+      </div>
+      <input type="file" id="avatar-file-input" accept="image/*" style="display:none" onchange="handleAvatarUpload(event)">
+      <div>
+        <div class="profile-name" id="prof-name">—</div>
+        <div class="profile-uname" id="prof-uname">—</div>
+        <div class="profile-stats">
+          <div class="profile-stat">
+            <span class="profile-stat-val txt-blue" id="prof-total-score">0</span>
+            <span class="profile-stat-lbl">Total Skor</span>
+          </div>
+          <div class="profile-stat">
+            <span class="profile-stat-val" id="prof-streak">0</span>
+            <span class="profile-stat-lbl">Streak 🔥</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb">
+      <div class="section-title" style="margin-bottom:12px">Skor per Kelas</div>
+      <div id="prof-class-scores"></div>
+    </div>
+
+    <div class="card">
+      <div class="section-title" style="margin-bottom:12px">Keamanan</div>
+      <div class="flex-between" style="padding:8px 0;border-bottom:1px solid var(--border)">
+        <div>
+          <div class="fw-bold txt-sm">Username</div>
+          <div class="txt-muted txt-sm" id="prof-user-disp">—</div>
+        </div>
+      </div>
+      <div class="flex-between" style="padding:8px 0">
+        <div>
+          <div class="fw-bold txt-sm">Password</div>
+          <div class="txt-muted txt-sm">••••••••</div>
+        </div>
+        <button class="btn btn-ghost" style="font-size:12px;padding:6px 12px" onclick="openChangePass()">Ubah</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ MULTIPLICATION TABLE PAGE ═══════════════ -->
+<div class="page" id="page-perkalian">
+  <nav class="nav">
+    <div class="flex gap-sm">
+      <button class="btn btn-ghost" onclick="gotoPage('home')">← Kembali</button>
+      <div class="nav-brand">× Tabel Perkalian</div>
+    </div>
+    <select class="inp" id="mult-range" style="width:auto;padding:6px 12px;font-size:13px" onchange="renderMultPage()">
+      <option value="5">1 – 5</option>
+      <option value="10" selected>1 – 10</option>
+      <option value="12">1 – 12</option>
+      <option value="20">1 – 20</option>
+    </select>
+  </nav>
+  <div class="content">
+
+    <!-- Kartu perkalian per angka -->
+    <div class="mult-section">
+      <div class="mult-section-title">
+        <span style="color:var(--blue)">×</span> Kartu Perkalian
+        <span class="badge badge-blue">Mudah dihafal</span>
+      </div>
+      <div class="mult-cards" id="mult-cards-wrap"></div>
+    </div>
+
+    <!-- Matrix tabel -->
+    <div class="mult-section">
+      <div class="mult-section-title">
+        <span style="color:var(--green)">↗</span> Matriks Perkalian
+      </div>
+      <div class="mult-matrix-wrap" id="mult-matrix-wrap"></div>
+    </div>
+
+    <!-- Bilangan Berpangkat -->
+    <div class="mult-section">
+      <div class="mult-section-title">
+        <span style="color:var(--purple)">xⁿ</span> Bilangan Berpangkat
+        <span class="badge badge-purple">Kelas 4–6</span>
+      </div>
+      <div id="power-table-wrap"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════ ADMIN PAGE ═══════════════ -->
+<div class="page" id="page-admin">
+  <nav class="nav">
+    <div class="nav-brand" style="color:var(--red)">🔐 Admin Panel</div>
+    <div class="nav-actions">
+      <div class="live-pill"><div class="live-dot"></div> LIVE</div>
+      <button class="btn btn-danger" onclick="doLogout()">Keluar</button>
+    </div>
+  </nav>
+  <div class="content">
+    <div class="grid3 mb-lg" id="admin-stats"></div>
+    <div class="tabs mb" id="admin-tabs">
+      <div class="tab active" onclick="setAdminTab('players')">👥 Pemain</div>
+      <div class="tab" onclick="setAdminTab('online')">🟢 Online</div>
+      <div class="tab" onclick="setAdminTab('scores')">📊 Skor</div>
+    </div>
+    <div id="admin-content"></div>
+  </div>
+</div>
+
+<!-- ═══════════════ MODALS ═══════════════ -->
+<div class="modal-bg" id="modal-edit-profile">
+  <div class="modal">
+    <div class="modal-title">✏️ Edit Profil</div>
+    <div class="flex-col">
+      <div>
+        <label class="form-label">Nama Lengkap</label>
+        <input class="inp" id="ep-name" placeholder="Nama baru">
+      </div>
+      <div class="flex" style="justify-content:flex-end;gap:8px;margin-top:8px">
+        <button class="btn btn-ghost" onclick="closeModal('modal-edit-profile')">Batal</button>
+        <button class="btn btn-primary" onclick="saveProfile()">Simpan</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="modal-change-pass">
+  <div class="modal">
+    <div class="modal-title">🔐 Ubah Password</div>
+    <div class="flex-col">
+      <div>
+        <label class="form-label">Password Lama</label>
+        <input class="inp" type="password" id="cp-old" placeholder="Password lama">
+      </div>
+      <div>
+        <label class="form-label">Password Baru</label>
+        <input class="inp" type="password" id="cp-new" placeholder="Min. 4 karakter">
+      </div>
+      <div id="cp-err" class="form-err"></div>
+      <div class="flex" style="justify-content:flex-end;gap:8px">
+        <button class="btn btn-ghost" onclick="closeModal('modal-change-pass')">Batal</button>
+        <button class="btn btn-primary" onclick="savePassword()">Simpan</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="modal-admin-edit">
+  <div class="modal">
+    <div class="modal-title">✏️ Edit Pemain</div>
+    <div class="flex-col">
+      <div>
+        <label class="form-label">Nama</label>
+        <input class="inp" id="ae-name" placeholder="Nama pemain">
+      </div>
+      <div>
+        <label class="form-label">Reset Skor (opsional)</label>
+        <input class="inp" type="number" id="ae-score" placeholder="Kosongkan = tidak berubah">
+      </div>
+      <div id="ae-err" class="form-err"></div>
+      <div class="flex" style="justify-content:flex-end;gap:8px">
+        <button class="btn btn-ghost" onclick="closeModal('modal-admin-edit')">Batal</button>
+        <button class="btn btn-primary" onclick="saveAdminEdit()">Simpan</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="confetti"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
